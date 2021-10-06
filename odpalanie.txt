@@ -1,0 +1,23 @@
+Startowanie Brokera RabbitQM
+- w konsoli uruchomionej jako admin
+- przejść do folderu gdzie jest zainstalowany RabbitMQ i do folderu sbin:
+```shell
+  cd C:\Program Files\RabbitMQ Server\rabbitmq_server-3.9.4\sbin
+```
+- uruchomić broker poleceniem
+```shell
+rabbitmq-server.bat
+```
+- zatrzymywanie brokera poleceniem
+```sh
+rabbitmq-service.bat stop
+```
+
+
+mikroserwis pociąg
+
+ celery -A train_microservice.celery_runner worker  --loglevel=INFO
+ celery multi stop -A train_microservice.celery_runner worker  --loglevel=INFO
+
+celery -A train_microservice.celery_runner beat   --loglevel=INFO
+

@@ -30,6 +30,7 @@ def create_application() -> Flask:
 
     app.register_blueprint(gateman_blueprint)
 
+    # Init and populate db
     db.init_app(app)
     with app.app_context():
         db.create_all()
