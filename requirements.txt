@@ -1,0 +1,10 @@
+# Python3.9
+flask~=2.0.2
+requests~=2.26.0
+SQLAlchemy
+flask-sqlalchemy
+pytz~=2021.3
+
+
+pytest
+python-decouple
