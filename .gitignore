@@ -303,3 +303,8 @@ modules.xml
 # Cython debug symbols
 
 # End of https://www.toptal.com/developers/gitignore/api/pycharm+all,python,flask
+
+central_microservice/log
+central_microservice/speed_files
+gateman_microservice/gateman_database.db
+celerybeat-schedule.*
