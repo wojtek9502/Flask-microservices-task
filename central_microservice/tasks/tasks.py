@@ -1,24 +1,17 @@
-import random
-import requests
+import json
 
-from train_microservice.celery_runner import celery, CENTRAL_MICROSERVICE_URL
-from train_microservice.utils import stations_list
+from flask import current_app
+from celery import shared_task
+
+from central_microservice.GatemanAPIClient.GatemanAPIClient import (
+    Api,
+    GatemanApiResponse,
+)
 
 
-@celery.task()
-def send_train_speed_info():
-    speed: float = random.uniform(0, 180)
-    speed_str = format(speed, ".1f")
-
-    payload = {"speed": speed_str}
-    res = requests.put(f'{CENTRAL_MICROSERVICE_URL}/central/report/speed', json=payload)
-    return 0
-
-@celery.task()
-def send_nearest_station_info():
-    random.shuffle(stations_list)
-    station_name = stations_list[0]
-
-    payload = {"station": station_name}
-    res = requests.put(f'{CENTRAL_MICROSERVICE_URL}/central/report/station', json=payload)
-    return 0
+@shared_task()
+def send_open_barrier():
+    GATEMAN_API_BASE_URL: str = current_app.config.get("GATEMAN_API_BASE_URL")
+    res: GatemanApiResponse = Api(GATEMAN_API_BASE_URL).open_barrier()
+    current_app.logger.info("Szlaban otwarty")
+    return json.dumps(res.data_dict)

@@ -1,26 +1,11 @@
 from pathlib import Path
 
-from celery import Celery
 from flask import Flask
-
+from logging import Formatter
+from logging.handlers import RotatingFileHandler
 from decouple import Config, RepositoryEnv
 
-
-def make_celery(app) -> Celery:
-    celery = Celery(
-        app.import_name,
-        backend=app.config['CELERY_RESULT_BACKEND'],
-        broker=app.config['CELERY_BROKER_URL']
-    )
-    celery.conf.update(app.config)
-
-    class ContextTask(celery.Task):
-        def __call__(self, *args, **kwargs):
-            with app.app_context():
-                return self.run(*args, **kwargs)
-
-    celery.Task = ContextTask
-    return celery
+from central_microservice.central.routes import central_blueprint
 
 
 def create_application() -> Flask:
@@ -34,26 +19,39 @@ def create_application() -> Flask:
     app: Flask = Flask(__name__)
 
     file_config: Config = Config(RepositoryEnv(CONFIG_FILE_PATH))
+    app.config["BASE_DIR"] = BASE_DIR
+    app.config["SECRET_KEY"] = file_config.get("SECRET_KEY", cast=str)
     app.config["APP_IP"] = file_config.get("APP_IP", cast=str)
     app.config["APP_PORT"] = file_config.get("APP_PORT", cast=int)
-    app.config["SECRET_KEY"] = file_config.get("SECRET_KEY", cast=str)
     app.config["TESTING"] = file_config.get("TESTING", cast=bool)
     app.config["DEBUG"] = file_config.get("DEBUG", cast=bool)
 
     # Celery
-    app.config['CELERY_BROKER_URL'] = file_config.get("CELERY_BROKER_URL", cast=str)
-    app.config['CELERY_RESULT_BACKEND'] = file_config.get("CELERY_RESULT_BACKEND", cast=str)
+    app.config["GATEMAN_API_BASE_URL"] = file_config.get("GATEMAN_API_BASE_URL")
+    app.config["CELERY_BROKER_URL"] = file_config.get("CELERY_BROKER_URL")
 
+    # Logger
+    APP_LOG_FILE_NAME: str = file_config.get("APP_LOG_FILE_NAME")
+    APP_LOGGER_PATH: Path = Path(BASE_DIR, APP_LOG_FILE_NAME)
+    APP_LOG_FORMAT: str = file_config.get("APP_LOG_FORMAT")
+    APP_LOG_LEVEL: str = file_config.get("APP_LOG_LEVEL")
+
+    file_handler: RotatingFileHandler = RotatingFileHandler(
+        APP_LOGGER_PATH, maxBytes=1024 * 1024 * 100, backupCount=3
+    )
+    file_handler.setLevel(APP_LOG_LEVEL)
+    formatter: Formatter = Formatter(APP_LOG_FORMAT)
+    file_handler.setFormatter(formatter)
+    app.logger.addHandler(file_handler)
+
+    app.register_blueprint(central_blueprint)
     return app
 
+
 application = create_application()
-celery = make_celery(application)
-
-@celery.task()
-def add_together(a, b):
-    return a + b
-
-# result = add_together.delay(23, 42)
-# result.wait()  # 65
-
-
+if __name__ == "__main__":
+    application.run(
+        application.config["APP_IP"],
+        port=application.config["APP_PORT"],
+        debug=application.config["DEBUG"],
+    )
