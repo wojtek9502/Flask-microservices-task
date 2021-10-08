@@ -4,7 +4,7 @@ requests~=2.26.0
 SQLAlchemy
 flask-sqlalchemy
 pytz~=2021.3
-Celery
+celery==4.4.2
 
 
 pytest

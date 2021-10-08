@@ -1,18 +1,24 @@
 import random
+import requests
+import json
 
-from celery import shared_task
-
+from train_microservice.celery_runner import celery, CENTRAL_MICROSERVICE_URL
 from train_microservice.utils import stations_list
 
 
-
-@shared_task
+@celery.task()
 def send_train_speed_info():
-    speed = random.uniform(0, 180)
-    print(speed)
+    speed: float = random.uniform(0, 180)
+    speed_str = format(speed, ".1f")
+
+    payload = {"speed": speed_str}
+    requests.put(f"{CENTRAL_MICROSERVICE_URL}/central/report/speed", json=payload)
 
 
-@shared_task
-def send_near_station_info():
-    station_name = random.shuffle(stations_list)[0]
-    print(station_name)
+@celery.task()
+def send_nearest_station_info():
+    random.shuffle(stations_list)
+    station_name = stations_list[0]
+
+    payload = {"station": station_name}
+    requests.put(f"{CENTRAL_MICROSERVICE_URL}/central/report/station", json=payload)
