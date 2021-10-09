@@ -27,7 +27,7 @@ class Api:
             requests.exceptions.RequestException,
         ) as err:
             dict_ = {"error": str(err)}
-            return GatemanApiResponse(dict_, r.status_code)
+            return GatemanApiResponse(dict_, 500)
 
     def close_barrier(self):
         url = f"{self.url}/gateman/barrier/close"
@@ -42,7 +42,7 @@ class Api:
             requests.exceptions.RequestException,
         ) as err:
             dict_ = {"error": str(err)}
-            return GatemanApiResponse(dict_, r.status_code)
+            return GatemanApiResponse(dict_, 500)
 
     def open_barrier(self):
         url = f"{self.url}/gateman/barrier/open"
@@ -57,4 +57,4 @@ class Api:
             requests.exceptions.RequestException,
         ) as err:
             dict_ = {"error": str(err)}
-            return GatemanApiResponse(dict_, r.status_code)
+            return GatemanApiResponse(dict_, 500)

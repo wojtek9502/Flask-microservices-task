@@ -47,7 +47,7 @@ def test_barrier_open_endpoint_received_data(client):
     assert barrier_status == expected
 
 
-def test_barrier_open_endpoint_received_data(client):
+def test_barrier_close_endpoint_received_data(client):
     endpoint_url: str = "gateman/barrier/close"
     expected = 0
 
