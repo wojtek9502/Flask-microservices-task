@@ -61,4 +61,4 @@ def retrive_train_station():
 
     # set task to open barrier after 10 sec
     tasks.send_open_barrier.apply_async((), countdown=10)
-    return jsonify({'status': 'OK'}), resp.status_code
+    return jsonify({"status": "OK"}), resp.status_code

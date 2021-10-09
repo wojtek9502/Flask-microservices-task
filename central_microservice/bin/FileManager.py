@@ -1,6 +1,7 @@
 from pathlib import Path
 from flask import current_app
 
+
 class SpeedFileManager:
     def __init__(self, file_path: Path, mode: str):
         self.file_path: Path = file_path

@@ -14,7 +14,9 @@ import pytest
         ("gateman/barrier/open", "get", 405),  # method not allowed
     ],
 )
-def test_api_endpoints_endpoint_availability(client, endpoint_url: str, method: str, status_code: int):
+def test_api_endpoints_endpoint_availability(
+    client, endpoint_url: str, method: str, status_code: int
+):
     expected: int = status_code
 
     rv = client.get(endpoint_url)
