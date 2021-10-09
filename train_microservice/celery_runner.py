@@ -21,7 +21,7 @@ celery = Celery("celery_runner", include=["train_microservice.tasks.tasks"])
 
 celery.conf.update(
     broker_url="amqp://",
-    backend_url="rcp://",
+    backend_url="rpc://",
     task_serializer="json",
     accept_content=["json"],  # Ignore other content
     result_serializer="json",
