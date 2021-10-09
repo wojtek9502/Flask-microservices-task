@@ -4,9 +4,9 @@ import tempfile
 import pytest
 import datetime
 
-from gateman_microservice.app import create_application
-from gateman_microservice.gateman.db import db
-from gateman_microservice.gateman.models import BarrierModel
+from app import create_application
+from gateman.db import db
+from gateman.models import BarrierModel
 
 
 @pytest.fixture

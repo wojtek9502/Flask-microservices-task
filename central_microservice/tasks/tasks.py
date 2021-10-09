@@ -3,7 +3,7 @@ import json
 from flask import current_app
 from celery import shared_task
 
-from central_microservice.GatemanAPIClient.GatemanAPIClient import (
+from GatemanAPIClient.GatemanAPIClient import (
     Api,
     GatemanApiResponse,
 )

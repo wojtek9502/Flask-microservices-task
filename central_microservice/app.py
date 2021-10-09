@@ -1,3 +1,4 @@
+import sys
 from pathlib import Path
 
 from flask import Flask
@@ -5,7 +6,7 @@ from logging import Formatter
 from logging.handlers import RotatingFileHandler
 from decouple import Config, RepositoryEnv
 
-from central_microservice.central.routes import central_blueprint
+from central.routes import central_blueprint
 
 
 def create_application() -> Flask:
@@ -21,7 +22,6 @@ def create_application() -> Flask:
     file_config: Config = Config(RepositoryEnv(CONFIG_FILE_PATH))
     app.config["BASE_DIR"] = BASE_DIR
     app.config["SECRET_KEY"] = file_config.get("SECRET_KEY", cast=str)
-    app.config["APP_IP"] = file_config.get("APP_IP", cast=str)
     app.config["APP_PORT"] = file_config.get("APP_PORT", cast=int)
     app.config["TESTING"] = file_config.get("TESTING", cast=bool)
     app.config["DEBUG"] = file_config.get("DEBUG", cast=bool)
@@ -50,8 +50,15 @@ def create_application() -> Flask:
 
 application = create_application()
 if __name__ == "__main__":
+    application = create_application()
+
+    ip = "0.0.0.0"
+    port = application.config["APP_PORT"]
+    if len(sys.argv) == 2:
+        ip = sys.argv[1]
+
     application.run(
-        application.config["APP_IP"],
-        port=application.config["APP_PORT"],
+        ip,
+        port=port,
         debug=application.config["DEBUG"],
     )

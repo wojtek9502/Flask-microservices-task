@@ -41,6 +41,14 @@ Responsible for communication between train_microservice and gateman_microservic
   Additionaly central_microservice is responsible for sending an info about open or close the railway barrier to gateman_microservice.
   Information about open or close the railway barrier is also saved in central_microservice/log file
 
+To test api endpoint run:
+```shell
+curl -X PUT -d '{"speed": "51.5"}' -H "Content-Type: application/json"  http://127.0.0.1:9000/central/report/speed
+```
+or
+```shell
+curl -X PUT -d '{"station": "station_name"}' -H "Content-Type: application/json"  http://127.0.0.1:9000/central/report/station
+```
 
 # Install
 - You can use virtualenv if you want. To activate virtualenv run: source <path_to_venv>/bin/activate
@@ -102,6 +110,21 @@ Run commands from every section in new terminal
   pytest -v
   ```
   
+## Docker run
+- cd <main_repo_dir>
+- docker build -t gateman ./gateman_microservice/
+- docker  run -d -p 9001:9001 gateman
+
+- cd <main_repo_dir>
+- docker build -t central ./central_microservice/
+- docker  run -d -p 9000:9000 central
+
+Network
+- docker network create project-network
+connect containers to network
+- docker network connect project-network central_container_id
+- docker network connect project-network gateman_container_id
+
 ## What could have been done better
 - Microservices, celery workers and beat should have been put into separate docker containers
 - central_microservice and gateman_microservice use develop server. Develop server is not recommended for production environment. It would be better to use Nginx + uWSGI

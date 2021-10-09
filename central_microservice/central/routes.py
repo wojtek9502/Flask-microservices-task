@@ -4,10 +4,10 @@ from datetime import datetime
 
 from flask import Blueprint, jsonify, request, current_app
 
-from central_microservice.bin.FileManager import SpeedFileManager
-from central_microservice.bin.SpeedFile import SpeedFile
-from central_microservice.tasks import tasks
-from central_microservice.GatemanAPIClient.GatemanAPIClient import (
+from bin.FileManager import SpeedFileManager
+from bin.SpeedFile import SpeedFile
+from tasks import tasks
+from GatemanAPIClient.GatemanAPIClient import (
     Api,
     GatemanApiResponse,
 )
@@ -18,6 +18,11 @@ central_blueprint = Blueprint("central_blueprint", __name__)
 @central_blueprint.route("/central/report/speed", methods=["PUT"])
 def retrive_train_speed():
     res: Dict[str, str] = {"status": "OK"}
+
+    if request.headers.get('content-type') != 'application/json':
+        res["status"] = "ERROR. Data is not in json format"
+        return jsonify(res), 400
+
     if "speed" not in request.get_json():
         res["status"] = "ERROR. Not found speed in request"
         return jsonify(res), 400

@@ -1,6 +1,6 @@
 from celery import Celery
 
-from central_microservice.app import application
+from app import application
 
 
 def make_celery(app):

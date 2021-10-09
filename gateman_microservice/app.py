@@ -1,11 +1,12 @@
+import sys
 from pathlib import Path
 
 from flask import Flask
 from decouple import Config, RepositoryEnv
 
-from gateman_microservice.gateman.routes import gateman_blueprint
-from gateman_microservice.gateman.db import db
-from gateman_microservice.gateman import utils
+from gateman.routes import gateman_blueprint
+from gateman.db import db
+from gateman import utils
 
 
 def create_application(test: bool = False) -> Flask:
@@ -20,7 +21,6 @@ def create_application(test: bool = False) -> Flask:
 
     file_config: Config = Config(RepositoryEnv(CONFIG_FILE_PATH))
     app.config["SECRET_KEY"] = file_config.get("SECRET_KEY", cast=str)
-    app.config["APP_IP"] = file_config.get("APP_IP", cast=str)
     app.config["APP_PORT"] = file_config.get("APP_PORT", cast=int)
     app.config["TESTING"] = test
     app.config["DEBUG"] = file_config.get("DEBUG", cast=bool)
@@ -44,8 +44,14 @@ def create_application(test: bool = False) -> Flask:
 
 if __name__ == "__main__":
     application = create_application()
+
+    ip = "0.0.0.0"
+    port = application.config["APP_PORT"]
+    if len(sys.argv) == 2:
+        ip = sys.argv[1]
+
     application.run(
-        application.config["APP_IP"],
-        port=application.config["APP_PORT"],
+        ip,
+        port=port,
         debug=application.config["DEBUG"],
     )
