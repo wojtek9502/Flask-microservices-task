@@ -1,6 +1,9 @@
 from requests import Response
 
-from train_microservice.tasks.tasks import send_train_speed_info, send_nearest_station_info
+from train_microservice.tasks.tasks import (
+    send_train_speed_info,
+    send_nearest_station_info,
+)
 
 # Run central microservice first. Make sure that rabbitqm is running
 def test_sending_train_speed_task_integration(celery_app, celery_worker):
