@@ -43,44 +43,54 @@ Responsible for communication between train_microservice and gateman_microservic
 
 
 # Install
+- You can use virtualenv if you want. To activate virtualenv run: source <path_to_venv>/bin/activate
 - install dependencies:
   ```sh
   cd Flask-microservices-task
+  source venv/bin/activate
   python -m pip install -r requirements.txt
   ```
 
+
 # Run
 ### Without docker-compose
+Run commands from every section in new terminal
+
 - start rabbitmq from docker image:  
    ```sh
    docker run -it --rm --name rabbitmq -p 5672:5672 -p 15672:15672 rabbitmq:3.9-management
    ```
-- go to main repo folder (run every command below from this folder): 
-  ```sh
-  cd Flask-microservices-task
-  ```
+
 - run gateman_microservice
   ```sh
   # check central_microservice/config.ini
-  python central_microservice/app.py
+  # go to main repo folder
+  export PYTHONPATH="${PYTHONPATH}:."
+  python3 central_microservice/app.py
   ```
 - run central_microservice
   ```sh
-  check gateman_microservice/config.ini
-  python gateman_microservice/app.py
+  # check gateman_microservice/config.ini
+  # go to main repo folder
+  export PYTHONPATH="${PYTHONPATH}:."
+  python3 gateman_microservice/app.py
   ```
 - run celery train_microservice worker and beat
   ```sh
   # check train_microservice/config.ini
+  # go to main repo folder
+  
   # You can run worker and beat separately, using two terminal instances
   celery -A train_microservice.celery_runner worker -n "train" -Q "celery_periodic" --loglevel=INFO
   celery -A train_microservice.celery_runner beat --loglevel=INFO
   
   # or run by one command (only for Linux, only for development purposes)
-  - celery -A train_microservice.celery_runner worker -n "train" -Q "celery_periodic" --loglevel=INFO -B
+  celery -A train_microservice.celery_runner worker -n "train" -Q "celery_periodic" --loglevel=INFO -B
   ```
 - run celery worker for central microservice
   ```sh
+  # go to main repo folder
+  export PYTHONPATH="${PYTHONPATH}:."
   celery -A central_microservice.celery_runner worker -n "central" --loglevel=INFO
   ```
   
@@ -88,6 +98,10 @@ Responsible for communication between train_microservice and gateman_microservic
 - For testing, rabbitmq, central_microservice and gateman_microservice must be running first!
 - To run test:
   ```sh
-  cd Flask-microservices-task
+  # go to main repo folder
   pytest -v
   ```
+  
+## What could have been done better
+- Microservices, celery workers and beat should have been put into separate docker containers
+- central_microservice and gateman_microservice use develop server. Develop server is not recommended for production environment. It would be better to use Nginx + uWSGI
